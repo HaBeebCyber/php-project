@@ -14,20 +14,24 @@
             <input type="submit" value="Add Task">
         </form>
 
-        <ul>
+        <table>
+            <tr>
+                <th>Task</th>
+                <th>Action</th>
+            </tr>
             <?php
             $mysqli = new mysqli("localhost", "username", "password", "todo_list");
+
             if ($mysqli->connect_error) {
                 die("Connection failed: " . $mysqli->connect_error);
             }
+
             if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $task = $_POST["task"];
                 if (!empty($task)) {
                     $sql = "INSERT INTO tasks (task_name) VALUES ('$task')";
                     $result = $mysqli->query($sql);
-                    if ($result) {
-                        echo "<li>$task <button class='delete-btn' onclick='deleteTask($mysqli->insert_id)'>Delete</button></li>";
-                    } else {
+                    if (!$result) {
                         echo "Error: " . $sql . "<br>" . $mysqli->error;
                     }
                 }
@@ -37,14 +41,15 @@
             $result = $mysqli->query($sql);
             if ($result->num_rows > 0) {
                 while ($row = $result->fetch_assoc()) {
-                    echo "<li>{$row['task_name']} <button class='delete-btn' onclick='deleteTask({$row['id']})'>Delete</button></li>";
+                    echo "<tr><td>{$row['task_name']}</td><td><button class='delete-btn' onclick='deleteTask({$row['id']})'>Delete</button></td></tr>";
                 }
             } else {
-                echo "<li>No tasks yet</li>";
+                echo "<tr><td colspan='2'>No tasks yet</td></tr>";
             }
+
             $mysqli->close();
             ?>
-        </ul>
+        </table>
     </div>
 
     <script>
